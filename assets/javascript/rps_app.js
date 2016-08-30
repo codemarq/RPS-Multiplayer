@@ -10,7 +10,7 @@ function rps () {
   };
   firebase.initializeApp(config);
 
-  var database = firebase(database);
+  var database = firebase.database();
 
   // global game variables
 
@@ -25,6 +25,15 @@ function rps () {
   // store data on firebase
 
   // prevent reload of page
+
+  // reload of window disconnects player
+
+
+  // chat window handler
+
+  // write messages to chat window
+
+  // chat message on-click
 }
 
 // waits for document ready to run javascript game function RPS
