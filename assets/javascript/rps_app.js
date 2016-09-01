@@ -23,7 +23,8 @@ function rps () {
   var wins = 0;//player object. reference firebase player attr wins
   var losses = 0;
   var ties = 0;
-  var currentPlayer = 0;//firebase
+  var currentPlayer = 0;//firebase====key to 2 players with different views
+  //  add if statements (if currentplayer = 1, yada yada)
   var player = {};//firebase
 
 
@@ -31,6 +32,11 @@ function rps () {
   // click handlers
   function rpsClick () {
     var userGuess = $(this).val();
+    var otherGuess = 0;
+    console.log(userGuess);
+    userGuess++;
+
+    decision = (userGuess - otherGuess) %2;
 
     // set timeout so that if player 2 does not enter in about 20seconds, 
     // then generate a modal to ask player 1 if they would like to play
@@ -39,6 +45,7 @@ function rps () {
     var computerGuess = choices[Math.floor(Math.random() * choices.length)];
 
     // re-do the below game logic with modulo arithmetic.
+
 
     // Making sure the user chooses r, p, or s--
     if ((userGuess == 'r') || (userGuess == 'p') || (userGuess == 's')){
@@ -147,19 +154,29 @@ function rps () {
   }
 
   // reload of window disconnects player and clears player from firebase
-
+  // on disconnect function in firebase
 
   // chat window handler
 
   // write messages to chat window
 
   // chat message on-click
+  function sendButton () {
+    // target #chatInputText and append to playerName
+    var chatMsg = playerName + $('#chatInputText').val();
+
+    // append chat text to chat window
+
+    // clear #chatInputText
+    $('#chatInputText').empty();
+  }
 }
 
 // waits for document ready to run javascript game function RPS
 $(document).ready(rps);
 
-
+// chat send button event listener
+$('#chatButton').click(sendButton);
 
 // click event listener
 $('.rpsButton').click(rpsClick);
