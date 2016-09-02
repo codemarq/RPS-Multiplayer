@@ -24,7 +24,8 @@ function rps () {
 
   function gameChoice () {
     // chooses which game (rps or rpsls) to load
-  }
+
+  };
 
   // Declares the tallies to 0 
   var wins = 0;//player object. reference firebase player attr wins
@@ -88,11 +89,12 @@ function rps () {
 
       // Placing the html into the game ID
       document.querySelector('#game').innerHTML = html;
+    };
 
   };
-// UPDATE THIS SECTION (ABOVE)!!!
+  // UPDATE THIS SECTION (ABOVE)!!!
 
-// ===================================================
+  // ===================================================
 
   // render buttons
   // Generic function for displaying movie data 
@@ -113,15 +115,13 @@ function rps () {
         a.attr('data-name', choices[i]); // Added a data-attribute
         a.text(choices[i]); // Provided the initial button text
         $('#buttonsView').append(a); // Added the button to the HTML
-    }
-  }
+    };
+  };
 
 
   // messages to player windows
 
   // dynamically generate players
-
-  // call giphs for results?
 
   // store data on firebase
 
@@ -155,10 +155,7 @@ function rps () {
 
     // render buttons
     renderButtons(currentPlayer);
-
-
-
-  }
+  };
 
   // reload of window disconnects player and clears player from firebase
   // on disconnect function in firebase
@@ -176,18 +173,17 @@ function rps () {
 
     // clear #chatInputText
     $('#chatInputText').empty();
-  }
-}
+  };
+  // chat send button event listener
+  $('#chatButton').click(sendButton);
+
+  // click event listener
+  $('.rpsButton').click(rpsClick);
+
+  // start button event listener
+  $('#startButton').click(startButton);
+};
 
 // waits for document ready to run javascript game function RPS
-$(document).ready(rps);
-
-// chat send button event listener
-$('#chatButton').click(sendButton);
-
-// click event listener
-$('.rpsButton').click(rpsClick);
-
-// start button event listener
-$('#startButton').click(startButton);
+// $(document).ready(rps);
 
