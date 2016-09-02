@@ -16,8 +16,15 @@ function rps () {
   // ========================================================
   // UPDATE THIS SECTION!!!!!!-store these variables to the firebase!!
   // global game variables
-  // Sets the choices 
-  var choices = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+  // Sets the choices
+  var rps = ['rock', 'paper', 'scissors']; 
+  var rpsls = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+
+  var choices = [];
+
+  function gameChoice () {
+    // chooses which game (rps or rpsls) to load
+  }
 
   // Declares the tallies to 0 
   var wins = 0;//player object. reference firebase player attr wins
