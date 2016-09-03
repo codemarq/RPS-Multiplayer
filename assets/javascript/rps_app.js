@@ -12,20 +12,12 @@ function rps () {
   firebase.initializeApp(config);
 
   var database = firebase.database();
-
   // ========================================================
   // UPDATE THIS SECTION!!!!!!-store these variables to the firebase!!
   // global game variables
   // Sets the choices
-  var rps = ['rock', 'paper', 'scissors']; 
+  var choices = ['rock', 'paper', 'scissors']; 
   var rpsls = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
-
-  var choices = [];
-
-  // function gameChoice () {
-  //   // chooses which game (rps or rpsls) to load
-
-  // };
 
   // Declares the tallies to 0 
   var wins = 0;//player object. reference firebase player attr wins
@@ -34,27 +26,13 @@ function rps () {
   var currentPlayer = 0;//store in firebase
   var players = 0; // store in firebase
 
-  var player = {
-    name: '',
-    number: 0,
-    choice: '',
-    score: 0,
-  };//firebase
-
-  function playerNum() {
-    if (currentPlayer == 0) {
-      currentPlayer++;
-      // Storage.clear();
-      sessionStorage.setItem('playerNumber', 1);
-      console.log('playerNumber: ' + sessionStorage.getItem('playerNumber'));
-    }
-    else if (currentPlayer == 1) {
-      currentPlayer++;
-      // Storage.clear();
-      Window.sessionStorage.setItem('playerNumber', 2);
-      console.log('playerNumber: ' + playerNumber);
-    }
-  }
+  database.ref().set({
+    players: players,
+    currentPlayer: currentPlayer
+  });
+  
+  var playerNumber = 0;
+  
 
   // click handlers
   function rpsClick () {
@@ -145,9 +123,13 @@ function rps () {
   // store data on firebase
 
   //  firebase watcher -- writes data to screen on calue changes
-  database.ref().on("value", function () {
+  database.ref().on("child_added", function (childSnapshot) {
     // write firebase data changes to screen
 
+    // console.log(childSnapshot.val().player1.name);
+    // console.log('Player number: ' + childSnapshot.val().player1_number);
+    $('#player1_name').html(childSnapshot.val().player1_name);
+    $('#player2_name').html(childSnapshot.val().player2_name);
     // Handle the errors
   }, function (errorObject) {
     // handles errors:
@@ -155,36 +137,51 @@ function rps () {
   });
 
   // enter player name function
-  function startButton (event) {
+  $('.startButton').on('click', function (event) {
+    // players++;
+    // playerNumber++;
+    console.log("===================")
+    console.log('startbutton pressed');
+    console.log('players: ' + players);
+    console.log('playerNumber: ' + playerNumber);
+    console.log('===================');
     // prevent reload of page on enter key
-    event.preventDefault();
+    event.preventDefault(); 
 
-    // player number session storage
-    playerNum();
 
-    // DEFINE PLAYER OBJECT, current move, wins, loses
-    player.name = $('#playerName').val().trim();
+    name = $('#playerName').val().trim();
+    // logic for which player you are
+    if (players == 0) {
+      
+      
+      database.ref().push({
+        'player1_name': name,
+        'player1_number': 1,
+        'player1_choice': '',
+        'player1_score': 0
+      });
+      players++;
+      console.log('players: ' + players);
+      // playerNumber++;
+      console.log('player1.name: ' + name)
+    }
+    else if (players == 1) {
+      console.log('player2.name: ' + name);
+      database.ref().push({
+        'player2_name': name,
+        'player2_number': 2,
+        'player2_choice': '',
+        'player2_score': 0
+      })
+      
+    };
 
-    // set player number
-    player.number = sessionStorage.getItem("playerNumber");
-
-    
 
     /* ADD SOME CODE HERE TO STORE AS AN OBJECT AND PUSH TO FIREBASE
      *   Also need to define a method for determining player 1 or 2
      *  either by incrementing a variable or by session info
      */
-    database.ref().push({
-      playerName: player.name,
-      playerNumber: player.number,
-      playerChoice: player.choice,
-      playerWins: player.score
-    });
-    // increment number of players in game
-    players++;
-    // set database players variable to players
-    database.ref().set({players: players});
-
+    
 
     // clear playerName text box and replace with placeholder text. 
     // clear div
@@ -192,8 +189,8 @@ function rps () {
     // replace with placeholeder text
     $('#playerName').attr('placeholder', 'Name');
     // then hide the player input box and button
-    $('#playerName').css('visibility', 'hidden');
-    $('#startButton').css('visibility', 'hidden');
+    // $('#playerName').css('visibility', 'hidden');
+    // $('#startButton').css('visibility', 'hidden');
 
 
     // write html (overwrite player name in div)
@@ -202,7 +199,7 @@ function rps () {
 
     // render buttons
     renderButtons(currentPlayer);
-  };
+  });
 
   // reload of window disconnects player and clears player from firebase
   // on disconnect function in firebase
@@ -229,7 +226,7 @@ function rps () {
   $('.rpsButton').click(rpsClick);
 
   // start button event listener
-  $('#startButton').click(startButton);
+  // $('#startButton').click(startButton);
 };
 
 // waits for document ready to run javascript game function RPS

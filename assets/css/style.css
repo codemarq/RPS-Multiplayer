@@ -19,8 +19,9 @@ section {
 	
 }
 
-/*#gameMessages {
-    height: 80%;
+#chatWindow {
+    /*height: 80%;*/
+    /*width: 80%;*/
     background-color: white;
     border: solid grey 1px;
-}*/
+}

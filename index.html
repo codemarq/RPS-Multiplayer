@@ -49,7 +49,7 @@
 			  </ul>
 			</div> -->
 
-			<button id="startButton" class="button btn btn-default" type="submit" value="start">Start</button>
+			<button id="startButton" class="startButton button btn btn-default" type="submit" value="start">Start</button>
 		</form>
 
 		<!-- ================================= -->
@@ -59,7 +59,7 @@
 			<div class="col-md-4 col-lg-4" id="player1">
 				<div class="thumbnail">
 					<div class="caption">
-						<h3>Player 1</h3>
+						<h3 id='player1_name'>Player 1</h3>
 						<div id="playerOneButtons"></div>
 					</div>
 				</div>
@@ -74,7 +74,7 @@
 			<div class="col-md-4 col-lg-4" id="player2">
 				<div class="thumbnail">
 					<div class="caption">
-						<h3>Player 2</h3>
+						<h3 id="player2_name">Player 2</h3>
 						<div id="playerTwoButtons"></div>
 					</div>
 				</div>
@@ -85,7 +85,9 @@
 		<form id="chat">
 			<legend>Chat</legend>
 			<!-- main chatroom window, past messages -->
-			<form-group id="chatWindow" class="apanel panel-body row"></form-group>
+			<form-group class="col-lg-12">
+			<div id="chatWindow" class="panel panel-body"></div>
+			</form-group>
 
 			<!-- text input and button -->
 			<form-group id="chatInput" class="col-lg-12">
