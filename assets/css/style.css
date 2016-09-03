@@ -14,8 +14,13 @@ body {
 .container .text-muted {
     margin: 20px 0;
 }
-section {
-	/*background-color: ;*/
 
-	/*width: 90%;*/
+section {
+	
 }
+
+/*#gameMessages {
+    height: 80%;
+    background-color: white;
+    border: solid grey 1px;
+}*/

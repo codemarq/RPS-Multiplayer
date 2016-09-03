@@ -22,20 +22,39 @@ function rps () {
 
   var choices = [];
 
-  function gameChoice () {
-    // chooses which game (rps or rpsls) to load
+  // function gameChoice () {
+  //   // chooses which game (rps or rpsls) to load
 
-  };
+  // };
 
   // Declares the tallies to 0 
   var wins = 0;//player object. reference firebase player attr wins
   var losses = 0;
   var ties = 0;
-  var currentPlayer = 0;//firebase====key to 2 players with different views
-  //  add if statements (if currentplayer = 1, yada yada)
-  var player = {};//firebase
+  var currentPlayer = 0;//store in firebase
+  var players = 0; // store in firebase
 
+  var player = {
+    name: '',
+    number: 0,
+    choice: '',
+    score: 0,
+  };//firebase
 
+  function playerNum() {
+    if (currentPlayer == 0) {
+      currentPlayer++;
+      // Storage.clear();
+      sessionStorage.setItem('playerNumber', 1);
+      console.log('playerNumber: ' + sessionStorage.getItem('playerNumber'));
+    }
+    else if (currentPlayer == 1) {
+      currentPlayer++;
+      // Storage.clear();
+      Window.sessionStorage.setItem('playerNumber', 2);
+      console.log('playerNumber: ' + playerNumber);
+    }
+  }
 
   // click handlers
   function rpsClick () {
@@ -125,19 +144,47 @@ function rps () {
 
   // store data on firebase
 
+  //  firebase watcher -- writes data to screen on calue changes
+  database.ref().on("value", function () {
+    // write firebase data changes to screen
+
+    // Handle the errors
+  }, function (errorObject) {
+    // handles errors:
+    console.log("Errors Handled: " + errorObject.code)
+  });
+
   // enter player name function
   function startButton (event) {
     // prevent reload of page on enter key
     event.preventDefault();
 
-    // DEFINE PLAYER OBJECT, current move, wins, loses
+    // player number session storage
+    playerNum();
 
-    // store playerName input to variable
-    playerName = $('#playerName').val();
+    // DEFINE PLAYER OBJECT, current move, wins, loses
+    player.name = $('#playerName').val().trim();
+
+    // set player number
+    player.number = sessionStorage.getItem("playerNumber");
+
+    
+
     /* ADD SOME CODE HERE TO STORE AS AN OBJECT AND PUSH TO FIREBASE
      *   Also need to define a method for determining player 1 or 2
      *  either by incrementing a variable or by session info
      */
+    database.ref().push({
+      playerName: player.name,
+      playerNumber: player.number,
+      playerChoice: player.choice,
+      playerWins: player.score
+    });
+    // increment number of players in game
+    players++;
+    // set database players variable to players
+    database.ref().set({players: players});
+
 
     // clear playerName text box and replace with placeholder text. 
     // clear div
@@ -160,6 +207,7 @@ function rps () {
   // reload of window disconnects player and clears player from firebase
   // on disconnect function in firebase
 
+  // =========================================================
   // chat window handler
 
   // write messages to chat window
@@ -185,5 +233,5 @@ function rps () {
 };
 
 // waits for document ready to run javascript game function RPS
-// $(document).ready(rps);
+$(document).ready(rps);
 
