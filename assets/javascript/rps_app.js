@@ -13,19 +13,30 @@ function rps () {
 
   var database = firebase.database();
   // ========================================================
-  // UPDATE THIS SECTION!!!!!!-store these variables to the firebase!!
   // global game variables
   // Sets the choices
   var choices = ['rock', 'paper', 'scissors']; 
   var rpsls = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
 
-  // Declares the tallies to 0 
-  var wins = 0;//player object. reference firebase player attr wins
-  var losses = 0;
-  var ties = 0;
+  // keep track of number of players for game state
+  // updated by the firebase "value" listener
   var currentPlayer = 0;//store in firebase
   var players = 0; // store in firebase
+  
+  // local copy of firebase variables for player 1 game logic
+  var player1 = {
+    name: '',
+    score: 0,
+    choice: '',
+  };
+  // local copy of firebase variables for player 2 game logic
+  var player2 = {
+    name: '',
+    score: 0,
+    choice: '',
+  };
 
+  // set initial variables to firebase
   database.ref().set({
     players: players,
     currentPlayer: currentPlayer
@@ -121,15 +132,29 @@ function rps () {
   // dynamically generate players
 
   // store data on firebase
+  // asynchronous listeners
+  database.ref().on("value", function(snapshot) {
+    // continuously update global variable "players" on users' page
 
-  //  firebase watcher -- writes data to screen on calue changes
+    players = snapshot.val().players;
+    player1.name = snapshot.val().player1_name;
+    player1.score = snapshot.val().player1_score;
+    player1.choice = snapshot.val().player1_choice;
+    player2.name = snapshot.val().player2_name;
+    player2.score = snapshot.val().player2_score;
+    player2.choice = snapshot.val().player2_choice;
+    console.log(snapshot.val().players);
+    // error handling
+  }), function (errorObject) {
+    console.log("The read Failed: " + errorObject.code);
+  };
+
+  //  firebase watcher -- writes data to screen on value changes
   database.ref().on("child_added", function (childSnapshot) {
     // write firebase data changes to screen
-
-    // console.log(childSnapshot.val().player1.name);
-    // console.log('Player number: ' + childSnapshot.val().player1_number);
     $('#player1_name').html(childSnapshot.val().player1_name);
     $('#player2_name').html(childSnapshot.val().player2_name);
+    
     // Handle the errors
   }, function (errorObject) {
     // handles errors:
@@ -138,32 +163,20 @@ function rps () {
 
   // enter player name function
   $('.startButton').on('click', function (event) {
-    // players++;
-    // playerNumber++;
-    console.log("===================")
-    console.log('startbutton pressed');
-    console.log('players: ' + players);
-    console.log('playerNumber: ' + playerNumber);
-    console.log('===================');
     // prevent reload of page on enter key
     event.preventDefault(); 
 
-
-    name = $('#playerName').val().trim();
+    name = $('#nameInput').val().trim();
     // logic for which player you are
     if (players == 0) {
-      
-      
       database.ref().push({
         'player1_name': name,
         'player1_number': 1,
         'player1_choice': '',
         'player1_score': 0
       });
-      players++;
-      console.log('players: ' + players);
-      // playerNumber++;
-      console.log('player1.name: ' + name)
+      database.ref().update({'players': 1});
+      playerNumber = 1;
     }
     else if (players == 1) {
       console.log('player2.name: ' + name);
@@ -173,24 +186,17 @@ function rps () {
         'player2_choice': '',
         'player2_score': 0
       })
-      
-    };
-
-
-    /* ADD SOME CODE HERE TO STORE AS AN OBJECT AND PUSH TO FIREBASE
-     *   Also need to define a method for determining player 1 or 2
-     *  either by incrementing a variable or by session info
-     */
-    
+      // sets players =2 in fb, which then updates local variable to 2
+      database.ref().update({'players': 2});    
+      playerNumber = 2;  
+    };    
 
     // clear playerName text box and replace with placeholder text. 
     // clear div
-    $('#playerName').empty();
-    // replace with placeholeder text
-    $('#playerName').attr('placeholder', 'Name');
+    $('#nameInput').html('');
     // then hide the player input box and button
-    // $('#playerName').css('visibility', 'hidden');
-    // $('#startButton').css('visibility', 'hidden');
+    $('#nameInput').css('visibility', 'hidden');
+    $('#startButton').css('visibility', 'hidden');
 
 
     // write html (overwrite player name in div)
