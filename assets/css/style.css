@@ -40,3 +40,12 @@ section {
     background-color: white;
     border: solid grey 1px;
 }
+
+ img {
+    max-width: 250px;
+    max-height: 250px:;
+}
+
+#player2, #player1 {
+    min-height: 214px;
+}
