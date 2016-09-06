@@ -38,16 +38,6 @@
 		<!-- div player name input form -->
 		<form class="form-horizontal">
 			<input type="text" id="nameInput" placeholder="Name">
-			<!-- dropdown for game choice -->
-			<!-- <div class="btn-group">
-			  <button class="btn btn-default btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="">
-			    Choose Game<span class="caret"></span>
-			  </button>
-			  <ul class="dropdown-menu">
-			  	<li><a href="#">Rock, Paper, Scissors</a></li>
-    			<li><a href="#">Rock, Paper, Scissors, Lizard, Spock</a></li>
-			  </ul>
-			</div> -->
 
 			<button id="startButton" class="startButton button btn btn-default" type="submit" value="start">Start</button>
 		</form>
@@ -56,28 +46,22 @@
 		<!-- div main game arena -->
 		<div id="arena" class="row">
 			<!-- player one -->
-			<div class="col-md-4 col-lg-4" id="player1">
-				<div class="thumbnail">
-					<div class="caption">
-						<h3 id='player1_name'>Player 1</h3>
-						<div id="playerOneButtons"></div>
-					</div>
-				</div>
+			<div class="col-md-12 col-lg-4 box" id="player1">
+					<h3 id='player1_name'>Waiting for Player 1</h3>
+					<div id="playerOneButtons"></div>
+					<div id="playerOneScore"><h2>Score: 0</h2></div>
 			</div>
 
 			<!-- game messages -->
-			<div class="col-md-4 col-lg-4" id="gameMessages">
-				
+			<div class="col-md-12 col-lg-4 box" id="gameMessages">
+				<h3>Enter name to start</h3>
 			</div>
 
 			<!-- player two -->
-			<div class="col-md-4 col-lg-4" id="player2">
-				<div class="thumbnail">
-					<div class="caption">
-						<h3 id="player2_name">Player 2</h3>
-						<div id="playerTwoButtons"></div>
-					</div>
-				</div>
+			<div class="col-md-12 col-lg-4 box" id="player2">
+				<h3 id="player2_name">Waiting for Player 2</h3>
+				<div id="playerTwoButtons"></div>
+				<div id="playerTwoScore"><h2>Score: 0</h2></div>
 			</div>
 		</div>
 

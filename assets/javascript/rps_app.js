@@ -1,6 +1,5 @@
-
+$(document).ready(function() {
 // Entire Game function
-function rps () {
 	// ========================================================
   // Initialize Firebase
   var config = {
@@ -14,9 +13,9 @@ function rps () {
   var database = firebase.database();
   // ========================================================
   // global game variables
-  // Sets the choices
-  var choices = ['rock', 'paper', 'scissors']; 
-  var rpsls = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+  // Sets the rps
+  var rps = ['Rock', 'Paper', 'Scissors']; 
+  var rpsls = ['Rock', 'Paper', 'Scissors', 'Lizard', 'Spock'];
 
   // keep track of number of players for game state
   // updated by the firebase "value" listener
@@ -35,115 +34,87 @@ function rps () {
     score: 0,
     choice: '',
   };
-
+  
   // set initial variables to firebase
   database.ref().set({
     players: players,
-    currentPlayer: currentPlayer
+    currentPlayer: currentPlayer,
+    choicesMade: 0
   });
   
   var playerNumber = 0;
-  
+  // ===================================================
+   // click handlers
+  function game (player1_choice, player2_choice) {
 
-  // click handlers
-  function rpsClick () {
-    var userGuess = $(this).val();
-    var otherGuess = 0;
-    console.log(userGuess);
-    userGuess++;
-
-    decision = (userGuess - otherGuess) %2;
-
-    // set timeout so that if player 2 does not enter in about 20seconds, 
-    // then generate a modal to ask player 1 if they would like to play
-    // against the computer. then set player2 == computerGuess.
-    // This sets the computer guess equal to the random.
-    var computerGuess = choices[Math.floor(Math.random() * choices.length)];
-
-    // re-do the below game logic with modulo arithmetic.
-
-
-    // Making sure the user chooses r, p, or s--
-    if ((userGuess == 'r') || (userGuess == 'p') || (userGuess == 's')){
-
-      // It tests to determine if the computer or the user won the round and then increments 
-      if ((userGuess == 'r') && (computerGuess == 's')){
-        wins++;
-      }else if ((userGuess == 'r') && (computerGuess == 'p')){
-        losses++;
-      }else if ((userGuess == 's') && (computerGuess == 'r')){
-        losses++;
-      }else if ((userGuess == 's') && (computerGuess == 'p')){
-        wins++;
-      }else if ((userGuess == 'p') && (computerGuess == 'r')){
-        wins++;
-      }else if ((userGuess == 'p') && (computerGuess == 's')){
-        losses++;
-      }else if (userGuess == computerGuess){
-        ties++;
-      }  
-
-      // Taking the tallies and displaying them in HTML
-      var html = "<p>Press r, p or s to start playing</p>" +
-      "<p>wins: " + 
-      wins + 
-      "</p>" +
-      "<p>losses: " + 
-      losses + 
-      "</p>" +
-      "<p>ties: " + 
-      ties + 
-      "</p>";
-
-      // Placing the html into the game ID
-      document.querySelector('#game').innerHTML = html;
-    };
+    var p1 = rps.indexOf(player1_choice);
+    var p2 = rps.indexOf(player2_choice);
+    console.log('p1: ' + p1);
+    console.log('p2: ' + p2);
 
   };
-  // UPDATE THIS SECTION (ABOVE)!!!
-
-  // ===================================================
 
   // render buttons
-  // Generic function for displaying movie data 
-  function renderButtons(player){ 
+  function renderButtons(){ 
     // passing in player argument to determine where to render buttons
-
+    if (playerNumber == 1) {
+      var buttonsView = $('#playerOneButtons')
+    } else {
+      var buttonsView = $('#playerTwoButtons')
+    }
 
     // Deletes the buttons prior to adding new buttons (this is necessary otherwise you will have repeat buttons)
-    $('#buttonsView').empty();
+    buttonsView.empty();
 
-    // Loops through the array of button choices
-    for (var i = 0; i < choices.length; i++){
+    // Loops through the array of button rps
+    for (var i = 0; i < rps.length; i++){
 
       // Then dynamicaly generates buttons for each attack choice in the array
 
-        var a = $('<button>') // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
-        a.addClass('choice'); // Added a class 
-        a.attr('data-name', choices[i]); // Added a data-attribute
-        a.text(choices[i]); // Provided the initial button text
-        $('#buttonsView').append(a); // Added the button to the HTML
+        var a = $('<button>'); // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
+        a.attr('value', rps[i]);
+        a.attr('id', 'rendered');
+        a.addClass('choice button');
+        a.addClass('btn btn-primary'); 
+        a.attr('data-name', rps[i]); // Added a data-attribute
+        a.text(rps[i]); // Provided the initial button text
+        buttonsView.append(a); // Added the button to the HTML
     };
   };
 
+  // button on click function
+  function choice () {
+    var choice = $(this).attr('value');
+    $('#gameMessages').empty();
+    $('#gameMessages').html('<div><h3>You Chose ' + choice + '</h3><div>');
+    $('#gameMessages').html("<div id='waiting'><h3>Waiting on other player</h3></div>");
+    
+    // update firebase
+    if (playerNumber == 1) {
+      database.ref().update({'player1_choice': choice});
+    } else { 
+      database.ref().update({'player2_choice': choice});
+    };
+    database.ref().update({'choicesMade': 1});
+    // handling choices made
+    // if (database.ref().choicesMade == 0) {
+      
+    // } else {
+    //   game(player1.choice, player2.choice);
+    // }
+  };
 
-  // messages to player windows
-
-  // dynamically generate players
-
-  // store data on firebase
   // asynchronous listeners
   database.ref().on("value", function(snapshot) {
     // continuously update global variable "players" on users' page
-
     players = snapshot.val().players;
     player1.name = snapshot.val().player1_name;
     player1.score = snapshot.val().player1_score;
     player1.choice = snapshot.val().player1_choice;
     player2.name = snapshot.val().player2_name;
     player2.score = snapshot.val().player2_score;
-    player2.choice = snapshot.val().player2_choice;
-    console.log(snapshot.val().players);
+    player2.choice = snapshot.val().player2_choice; 
+
     // error handling
   }), function (errorObject) {
     console.log("The read Failed: " + errorObject.code);
@@ -175,8 +146,15 @@ function rps () {
         'player1_choice': '',
         'player1_score': 0
       });
+      // update players variables locally and on fb
       database.ref().update({'players': 1});
       playerNumber = 1;
+
+      // render player buttons and update game message
+      renderButtons();
+      $('#gameMessages').empty();
+      $('#gameMessages').html('<h3>You can choose your move when ready</h3>');
+
     }
     else if (players == 1) {
       console.log('player2.name: ' + name);
@@ -189,6 +167,9 @@ function rps () {
       // sets players =2 in fb, which then updates local variable to 2
       database.ref().update({'players': 2});    
       playerNumber = 2;  
+      renderButtons();
+      $('#gameMessages').empty();
+      $('#gameMessages').html('<h3>You can choose your move when ready</h3>');
     };    
 
     // clear playerName text box and replace with placeholder text. 
@@ -228,13 +209,12 @@ function rps () {
   // chat send button event listener
   $('#chatButton').click(sendButton);
 
-  // click event listener
-  $('.rpsButton').click(rpsClick);
-
   // start button event listener
   // $('#startButton').click(startButton);
-};
+  
+  // event listener RPS buttons
+  $(document).on('click', '.choice', choice);
+});
 
-// waits for document ready to run javascript game function RPS
-$(document).ready(rps);
+
 
