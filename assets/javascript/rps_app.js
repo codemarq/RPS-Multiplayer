@@ -15,7 +15,42 @@ $(document).ready(function() {
   // global game variables
   // Sets the rps
   var rps = ['Rock', 'Paper', 'Scissors']; 
-  var rpsls = ['Rock', 'Paper', 'Scissors', 'Lizard', 'Spock'];
+  var rpsls = [
+    Rock = {
+      name: 'Rock',
+      Paper: 'Paper Covers Rock',
+      Scissors: 'Rock smashes Scissors',
+      Spock: 'Spock Vaporizes Rock',
+      Lizard: 'Rock Crushes Lizard'
+    }, 
+    Paper = {
+      name: 'Paper',
+      Scissors: 'Scissors Cut Paper',
+      Spock: 'Paper disproves Spock',
+      Lizard: 'Lizard eats Paper',
+      Rock: 'Paper Covers Rock'
+    },
+    Scissors = {
+      name: 'Scissors',
+      Spock: 'Spock Smashes Scissors',
+      Lizard: 'Scissors Decapitate Lizard',
+      Rock: 'Rock smashes Scissors',
+      Paper: 'Scissors cut paper'
+    },   
+    Spock = {
+      name:'Spock',
+      Lizard: 'Lizard Poisons Spock',
+      Rock: 'Spock vaporizes Rock',
+      Paper: 'Paper disproves Spock',
+      Scissors: 'Spock Smashes Scissors'
+    },
+    Lizard = {
+      name: 'Lizard',
+      Rock: 'Rock Smashes Lizard',
+      Paper: 'Lizard eats Paper',
+      Scissors: 'Scissors decapitate Lizard',
+      Spock: 'Lizard poisons Spock'
+    }];
 
   // keep track of number of players for game state
   // updated by the firebase "value" listener
@@ -35,11 +70,12 @@ $(document).ready(function() {
     choice: '',
   };
   
+  var choicesMade = 0;
   // set initial variables to firebase
   database.ref().set({
     players: players,
     currentPlayer: currentPlayer,
-    choicesMade: 0
+    choicesMade: choicesMade
   });
   
   var playerNumber = 0;
@@ -47,10 +83,28 @@ $(document).ready(function() {
    // click handlers
   function game (player1_choice, player2_choice) {
 
-    var p1 = rps.indexOf(player1_choice);
-    var p2 = rps.indexOf(player2_choice);
-    console.log('p1: ' + p1);
-    console.log('p2: ' + p2);
+    var p1 = player1_choice;
+    var p2 = player2_choice;
+
+    var lose = [0, 3, -2, -4];
+    var win = [2, 4, -1, -3];
+
+    var outcome = (p1 + 1) - p2;
+
+    if (outcome == 1) {
+      // tie score
+      $('#gameMessage').html("<h3>Tie Game, you both chose " + player1.choice + "</h3>");   
+    } 
+    else if (($.inArray(outcome, lose)) != -1) {
+      // if outcome is in lose array
+      $('#gameMessage').html("<h3>" + rpsls[p1].player2.choice + "</h3>");
+      player2.score ++;
+    }
+    else {
+      // win
+      $('#gameMessage').html("<h3>" + rpsls[p1].player2.choice + "</h3>");
+      player1.score++;
+    }
 
   };
 
@@ -58,33 +112,31 @@ $(document).ready(function() {
   function renderButtons(){ 
     // passing in player argument to determine where to render buttons
     if (playerNumber == 1) {
-      var buttonsView = $('#playerOneButtons')
+      var buttonsView = $('#player1_buttons')
     } else {
-      var buttonsView = $('#playerTwoButtons')
+      var buttonsView = $('#player2_buttons')
     }
 
     // Deletes the buttons prior to adding new buttons (this is necessary otherwise you will have repeat buttons)
     buttonsView.empty();
 
     // Loops through the array of button rps
-    for (var i = 0; i < rps.length; i++){
+    for (var i = 0; i < rpsls.length; i++){
 
       // Then dynamicaly generates buttons for each attack choice in the array
-
         var a = $('<button>'); // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
-        a.attr('value', rps[i]);
-        a.attr('id', 'rendered');
+        a.attr('value', [i]);
         a.addClass('choice button');
         a.addClass('btn btn-primary'); 
-        a.attr('data-name', rps[i]); // Added a data-attribute
-        a.text(rps[i]); // Provided the initial button text
+        a.attr('data-name', rpsls[i].name); // Added a data-attribute
+        a.text(rpsls[i].name); // Provided the initial button text
         buttonsView.append(a); // Added the button to the HTML
     };
   };
 
   // button on click function
   function choice () {
-    var choice = $(this).attr('value');
+    var choice = $(this).val();
     $('#gameMessages').empty();
     $('#gameMessages').html('<div><h3>You Chose ' + choice + '</h3><div>');
     $('#gameMessages').html("<div id='waiting'><h3>Waiting on other player</h3></div>");
@@ -92,16 +144,20 @@ $(document).ready(function() {
     // update firebase
     if (playerNumber == 1) {
       database.ref().update({'player1_choice': choice});
+      $('#player1_buttons').empty();
     } else { 
       database.ref().update({'player2_choice': choice});
+      $('#player2_buttons').empty();
     };
-    database.ref().update({'choicesMade': 1});
+    choicesMade++;
+    database.ref().update({'choicesMade': choicesMade});
+
+    console.log('player1: '+ player1.choice);
+    console.log('player2: ' + player2.choice)
     // handling choices made
-    // if (database.ref().choicesMade == 0) {
-      
-    // } else {
-    //   game(player1.choice, player2.choice);
-    // }
+    if (choicesMade == 2) {
+      game(player1.choice, player2.choice);
+    }
   };
 
   // asynchronous listeners
@@ -114,23 +170,16 @@ $(document).ready(function() {
     player2.name = snapshot.val().player2_name;
     player2.score = snapshot.val().player2_score;
     player2.choice = snapshot.val().player2_choice; 
+    choicesMade = snapshot.val().choicesMade;
 
+    $('#player1_name').html(snapshot.val().player1_name);
+    $('#player2_name').html(snapshot.val().player2_name);
+    $('#player1_score').html(snapshot.val().player1_score);
+    $('#player2_score').html(snapshot.val().player2_score);
     // error handling
   }), function (errorObject) {
     console.log("The read Failed: " + errorObject.code);
   };
-
-  //  firebase watcher -- writes data to screen on value changes
-  database.ref().on("child_added", function (childSnapshot) {
-    // write firebase data changes to screen
-    $('#player1_name').html(childSnapshot.val().player1_name);
-    $('#player2_name').html(childSnapshot.val().player2_name);
-    
-    // Handle the errors
-  }, function (errorObject) {
-    // handles errors:
-    console.log("Errors Handled: " + errorObject.code)
-  });
 
   // enter player name function
   $('.startButton').on('click', function (event) {
@@ -140,14 +189,11 @@ $(document).ready(function() {
     name = $('#nameInput').val().trim();
     // logic for which player you are
     if (players == 0) {
-      database.ref().push({
-        'player1_name': name,
-        'player1_number': 1,
-        'player1_choice': '',
-        'player1_score': 0
-      });
       // update players variables locally and on fb
-      database.ref().update({'players': 1});
+      database.ref().update({
+        'players': 1,
+        'player1_name': name,
+      });
       playerNumber = 1;
 
       // render player buttons and update game message
@@ -158,14 +204,11 @@ $(document).ready(function() {
     }
     else if (players == 1) {
       console.log('player2.name: ' + name);
-      database.ref().push({
-        'player2_name': name,
-        'player2_number': 2,
-        'player2_choice': '',
-        'player2_score': 0
-      })
       // sets players =2 in fb, which then updates local variable to 2
-      database.ref().update({'players': 2});    
+      database.ref().update({
+        'players': 2,
+        'player2_name': name,
+      });    
       playerNumber = 2;  
       renderButtons();
       $('#gameMessages').empty();
@@ -178,11 +221,6 @@ $(document).ready(function() {
     // then hide the player input box and button
     $('#nameInput').css('visibility', 'hidden');
     $('#startButton').css('visibility', 'hidden');
-
-
-    // write html (overwrite player name in div)
-
-    // write html 'Waiting on player 2' or 'Your Move!' 
 
     // render buttons
     renderButtons(currentPlayer);
@@ -202,15 +240,13 @@ $(document).ready(function() {
     var chatMsg = playerName + $('#chatInputText').val();
 
     // append chat text to chat window
+    $('#chatWindow').append(chatMsg);
 
     // clear #chatInputText
     $('#chatInputText').empty();
   };
   // chat send button event listener
   $('#chatButton').click(sendButton);
-
-  // start button event listener
-  // $('#startButton').click(startButton);
   
   // event listener RPS buttons
   $(document).on('click', '.choice', choice);
