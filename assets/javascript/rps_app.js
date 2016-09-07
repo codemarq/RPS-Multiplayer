@@ -18,6 +18,7 @@ $(document).ready(function() {
   var rpsls = [
     Rock = {
       name: 'Rock',
+      // value: Rock,
       Paper: 'Paper Covers Rock',
       Scissors: 'Rock smashes Scissors',
       Spock: 'Spock Vaporizes Rock',
@@ -25,6 +26,7 @@ $(document).ready(function() {
     }, 
     Paper = {
       name: 'Paper',
+      // value: Paper,
       Scissors: 'Scissors Cut Paper',
       Spock: 'Paper disproves Spock',
       Lizard: 'Lizard eats Paper',
@@ -32,6 +34,7 @@ $(document).ready(function() {
     },
     Scissors = {
       name: 'Scissors',
+      // value: Scissors,
       Spock: 'Spock Smashes Scissors',
       Lizard: 'Scissors Decapitate Lizard',
       Rock: 'Rock smashes Scissors',
@@ -39,6 +42,7 @@ $(document).ready(function() {
     },   
     Spock = {
       name:'Spock',
+      // value: Spock,
       Lizard: 'Lizard Poisons Spock',
       Rock: 'Spock vaporizes Rock',
       Paper: 'Paper disproves Spock',
@@ -46,6 +50,7 @@ $(document).ready(function() {
     },
     Lizard = {
       name: 'Lizard',
+      // value: Lizard,
       Rock: 'Rock Smashes Lizard',
       Paper: 'Lizard eats Paper',
       Scissors: 'Scissors decapitate Lizard',
@@ -56,7 +61,7 @@ $(document).ready(function() {
   // updated by the firebase "value" listener
   var currentPlayer = 0;//store in firebase
   var players = 0; // store in firebase
-  
+  var gameMessage = '';
   // local copy of firebase variables for player 1 game logic
   var player1 = {
     name: '',
@@ -75,7 +80,8 @@ $(document).ready(function() {
   database.ref().set({
     players: players,
     currentPlayer: currentPlayer,
-    choicesMade: choicesMade
+    choicesMade: choicesMade,
+    // gameMessage: gameMessage
   });
   
   var playerNumber = 0;
@@ -83,27 +89,36 @@ $(document).ready(function() {
    // click handlers
   function game (player1_choice, player2_choice) {
 
-    var p1 = player1_choice;
-    var p2 = player2_choice;
+    var p1 = parseInt(player1_choice);
+    var p2 = parseInt(player2_choice);
+    var c = rpsls[p1];
+    // var d = rpsls[p2].value;
+    // console.log(d);
+    
 
     var lose = [0, 3, -2, -4];
     var win = [2, 4, -1, -3];
 
     var outcome = (p1 + 1) - p2;
+    console.log(outcome);
 
     if (outcome == 1) {
       // tie score
-      $('#gameMessage').html("<h3>Tie Game, you both chose " + player1.choice + "</h3>");   
+      // database.ref().update({'gameMessage': "<h3>Tie Game, you both chose " + c + "</h3>"});
+      $('#gameMessage').html("Tie Game, you both chose " + c.name);   
     } 
     else if (($.inArray(outcome, lose)) != -1) {
       // if outcome is in lose array
-      $('#gameMessage').html("<h3>" + rpsls[p1].player2.choice + "</h3>");
+      $('#gameMessage').html(rpsls[p1].d);
       player2.score ++;
+      
     }
     else {
       // win
-      $('#gameMessage').html("<h3>" + rpsls[p1].player2.choice + "</h3>");
+      $('#gameMessage').html(rpsls[p1].d);
+      
       player1.score++;
+
     }
 
   };
@@ -137,9 +152,9 @@ $(document).ready(function() {
   // button on click function
   function choice () {
     var choice = $(this).val();
-    $('#gameMessages').empty();
-    $('#gameMessages').html('<div><h3>You Chose ' + choice + '</h3><div>');
-    $('#gameMessages').html("<div id='waiting'><h3>Waiting on other player</h3></div>");
+    $('#gameMessage').empty();
+    $('#gameMessage').html('<div><h3>You Chose ' + choice + '</h3><div>');
+    $('#gameMessage').html("<div id='waiting'><h3>Waiting on other player</h3></div>");
     
     // update firebase
     if (playerNumber == 1) {
@@ -171,11 +186,13 @@ $(document).ready(function() {
     player2.score = snapshot.val().player2_score;
     player2.choice = snapshot.val().player2_choice; 
     choicesMade = snapshot.val().choicesMade;
+    // gameMessage = snapshot.val().gameMessage;
 
     $('#player1_name').html(snapshot.val().player1_name);
     $('#player2_name').html(snapshot.val().player2_name);
     $('#player1_score').html(snapshot.val().player1_score);
     $('#player2_score').html(snapshot.val().player2_score);
+    // $('#gameMessage').html(snapshot.val().gameMessage);
     // error handling
   }), function (errorObject) {
     console.log("The read Failed: " + errorObject.code);
@@ -198,12 +215,11 @@ $(document).ready(function() {
 
       // render player buttons and update game message
       renderButtons();
-      $('#gameMessages').empty();
-      $('#gameMessages').html('<h3>You can choose your move when ready</h3>');
+      $('#gameMessage').empty();
+      $('#gameMessage').html('You can choose your move when ready');
 
     }
     else if (players == 1) {
-      console.log('player2.name: ' + name);
       // sets players =2 in fb, which then updates local variable to 2
       database.ref().update({
         'players': 2,
@@ -211,8 +227,8 @@ $(document).ready(function() {
       });    
       playerNumber = 2;  
       renderButtons();
-      $('#gameMessages').empty();
-      $('#gameMessages').html('<h3>You can choose your move when ready</h3>');
+      $('#gameMessage').empty();
+      $('#gameMessage').html('You can choose your move when ready');
     };    
 
     // clear playerName text box and replace with placeholder text. 
