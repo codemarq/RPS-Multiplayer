@@ -13,55 +13,35 @@ $(document).ready(function() {
   var database = firebase.database();
   // ========================================================
   // global game variables
-  // Sets the rps
-  var rps = ['Rock', 'Paper', 'Scissors']; 
+  // Sets the rpsls
   var rpsls = [
     Rock = {
       name: 'Rock',
-      // value: Rock,
-      Paper: 'Paper Covers Rock',
-      Scissors: 'Rock smashes Scissors',
-      Spock: 'Spock Vaporizes Rock',
-      Lizard: 'Rock Crushes Lizard'
+      // responses-i know there is a better way than repeating
+      // this code but i ran out of time
+      response: ['Tie', 'Paper Covers Rock', 'Rock smashes Scissors', 'Spock Vaporizes Rock', 'Rock Crushes Lizard']
     }, 
     Paper = {
       name: 'Paper',
-      // value: Paper,
-      Scissors: 'Scissors Cut Paper',
-      Spock: 'Paper disproves Spock',
-      Lizard: 'Lizard eats Paper',
-      Rock: 'Paper Covers Rock'
+      response: ['Paper Covers Rock', 'Tie', 'Scissors Cut Paper', 'Paper disproves Spock', 'Lizard eats Paper',]
     },
     Scissors = {
       name: 'Scissors',
-      // value: Scissors,
-      Spock: 'Spock Smashes Scissors',
-      Lizard: 'Scissors Decapitate Lizard',
-      Rock: 'Rock smashes Scissors',
-      Paper: 'Scissors cut paper'
+      response: ['Rock smashes Scissors', 'Scissors cut paper', 'Tie', 'Spock Smashes Scissors', 'Scissors Decapitate Lizard',]
     },   
     Spock = {
       name:'Spock',
-      // value: Spock,
-      Lizard: 'Lizard Poisons Spock',
-      Rock: 'Spock vaporizes Rock',
-      Paper: 'Paper disproves Spock',
-      Scissors: 'Spock Smashes Scissors'
+      response: ['Spock vaporizes Rock', 'Paper disproves Spock', 'Spock Smashes Scissors', 'Tie', 'Lizard Poisons Spock']
     },
     Lizard = {
       name: 'Lizard',
-      // value: Lizard,
-      Rock: 'Rock Smashes Lizard',
-      Paper: 'Lizard eats Paper',
-      Scissors: 'Scissors decapitate Lizard',
-      Spock: 'Lizard poisons Spock'
+      response: ['Rock Smashes Lizard', 'Lizard eats Paper', 'Scissors decapitate Lizard', 'Lizard poisons Spock', 'Tie']
     }];
 
   // keep track of number of players for game state
-  // updated by the firebase "value" listener
-  var currentPlayer = 0;//store in firebase
-  var players = 0; // store in firebase
-  var gameMessage = '';
+  var currentPlayer = 0;
+  var players = 0; 
+  
   // local copy of firebase variables for player 1 game logic
   var player1 = {
     name: '',
@@ -79,9 +59,7 @@ $(document).ready(function() {
   // set initial variables to firebase
   database.ref().set({
     players: players,
-    currentPlayer: currentPlayer,
     choicesMade: choicesMade,
-    // gameMessage: gameMessage
   });
   
   var playerNumber = 0;
@@ -91,36 +69,33 @@ $(document).ready(function() {
 
     var p1 = parseInt(player1_choice);
     var p2 = parseInt(player2_choice);
-    var c = rpsls[p1];
-    // var d = rpsls[p2].value;
-    // console.log(d);
-    
 
+    // win/lose messages handled by player object
+    gameMessage = rpsls[p1].response[p2];
+    $('#gameMessage').html(gameMessage);
+
+    // win/lose logic for scoring
     var lose = [0, 3, -2, -4];
     var win = [2, 4, -1, -3];
-
-    var outcome = (p1 + 1) - p2;
-    console.log(outcome);
+    var outcome = (p1 + 1) - p2; 
 
     if (outcome == 1) {
-      // tie score
-      // database.ref().update({'gameMessage': "<h3>Tie Game, you both chose " + c + "</h3>"});
-      $('#gameMessage').html("Tie Game, you both chose " + c.name);   
+      // tie
+      $('#gameMessage').html("Tie Game, you both chose " + rpsls[p1].name);   
     } 
     else if (($.inArray(outcome, lose)) != -1) {
-      // if outcome is in lose array
-      $('#gameMessage').html(rpsls[p1].d);
+      // p1 lose
       player2.score ++;
-      
+      $('#player2_score').html("<h2>Score: " + player2.score + "</h2>");
     }
     else {
-      // win
-      $('#gameMessage').html(rpsls[p1].d);
-      
+      // p1 win
       player1.score++;
-
+      $('#player1_score').html("<h2>Score: " + player1.score + "</h2>");    
     }
-
+    choicesMade = 0;
+    database.ref().update({'choicesMade': choicesMade});
+    setTimeout(function() {renderButtons();}, 2000);
   };
 
   // render buttons
@@ -152,9 +127,11 @@ $(document).ready(function() {
   // button on click function
   function choice () {
     var choice = $(this).val();
+    var choiceName = $(this).data('name');
+
     $('#gameMessage').empty();
-    $('#gameMessage').html('<div><h3>You Chose ' + choice + '</h3><div>');
-    $('#gameMessage').html("<div id='waiting'><h3>Waiting on other player</h3></div>");
+    $('#gameMessage').html('<div><h3>You Chose ' + choiceName + '</h3><div>');
+    // $('#gameMessage').html("Waiting on other player");
     
     // update firebase
     if (playerNumber == 1) {
@@ -165,34 +142,30 @@ $(document).ready(function() {
       $('#player2_buttons').empty();
     };
     choicesMade++;
-    database.ref().update({'choicesMade': choicesMade});
-
-    console.log('player1: '+ player1.choice);
-    console.log('player2: ' + player2.choice)
-    // handling choices made
-    if (choicesMade == 2) {
-      game(player1.choice, player2.choice);
-    }
+    database.ref().update({'choicesMade': choicesMade});    
   };
-
+  
+ 
   // asynchronous listeners
   database.ref().on("value", function(snapshot) {
     // continuously update global variable "players" on users' page
     players = snapshot.val().players;
     player1.name = snapshot.val().player1_name;
-    player1.score = snapshot.val().player1_score;
     player1.choice = snapshot.val().player1_choice;
     player2.name = snapshot.val().player2_name;
-    player2.score = snapshot.val().player2_score;
     player2.choice = snapshot.val().player2_choice; 
     choicesMade = snapshot.val().choicesMade;
-    // gameMessage = snapshot.val().gameMessage;
+
+    // when both players choose, run game
+    if (choicesMade == 2) {
+      game(player1.choice, player2.choice);
+    };
 
     $('#player1_name').html(snapshot.val().player1_name);
     $('#player2_name').html(snapshot.val().player2_name);
     $('#player1_score').html(snapshot.val().player1_score);
     $('#player2_score').html(snapshot.val().player2_score);
-    // $('#gameMessage').html(snapshot.val().gameMessage);
+
     // error handling
   }), function (errorObject) {
     console.log("The read Failed: " + errorObject.code);

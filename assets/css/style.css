@@ -20,17 +20,10 @@ section {
 }
 
 #chatWindow {
-    /*height: 80%;*/
-    /*width: 80%;*/
     background-color: white;
     border: solid grey 1px;
 }
 
-#gameMessages {
-    /*background-color: white;
-    border: solid grey 1px;
-*/
-}
 .choice {
     margin: 5px;
 }
@@ -47,5 +40,5 @@ section {
 }
 
 #player2, #player1 {
-    min-height: 214px;
+    min-height: 180px;
 }
