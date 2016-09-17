@@ -47,12 +47,14 @@ $(document).ready(function() {
     name: '',
     score: 0,
     choice: '',
+    chatMsg: ''
   };
   // local copy of firebase variables for player 2 game logic
   var player2 = {
     name: '',
     score: 0,
     choice: '',
+    chatMsg: ''
   };
   
   var choicesMade = 0;
@@ -76,7 +78,7 @@ $(document).ready(function() {
 
     // win/lose logic for scoring
     var lose = [0, 3, -2, -4];
-    var win = [2, 4, -1, -3];
+    // var win = [2, 4, -1, -3];
     var outcome = (p1 + 1) - p2; 
 
     if (outcome == 1) {
@@ -96,15 +98,15 @@ $(document).ready(function() {
     choicesMade = 0;
     database.ref().update({'choicesMade': choicesMade});
     setTimeout(function() {renderButtons();}, 2000);
-  };
+  }
 
   // render buttons
   function renderButtons(){ 
     // passing in player argument to determine where to render buttons
     if (playerNumber == 1) {
-      var buttonsView = $('#player1_buttons')
+      buttonsView = $('#player1_buttons');
     } else {
-      var buttonsView = $('#player2_buttons')
+      buttonsView = $('#player2_buttons');
     }
 
     // Deletes the buttons prior to adding new buttons (this is necessary otherwise you will have repeat buttons)
@@ -121,8 +123,8 @@ $(document).ready(function() {
         a.attr('data-name', rpsls[i].name); // Added a data-attribute
         a.text(rpsls[i].name); // Provided the initial button text
         buttonsView.append(a); // Added the button to the HTML
-    };
-  };
+    }
+  }
 
   // button on click function
   function choice () {
@@ -140,10 +142,10 @@ $(document).ready(function() {
     } else { 
       database.ref().update({'player2_choice': choice});
       $('#player2_buttons').empty();
-    };
+    }
     choicesMade++;
     database.ref().update({'choicesMade': choicesMade});    
-  };
+  }
   
  
   // asynchronous listeners
@@ -155,20 +157,22 @@ $(document).ready(function() {
     player2.name = snapshot.val().player2_name;
     player2.choice = snapshot.val().player2_choice; 
     choicesMade = snapshot.val().choicesMade;
-
+    
     // when both players choose, run game
     if (choicesMade == 2) {
       game(player1.choice, player2.choice);
-    };
+    }
 
     $('#player1_name').html(snapshot.val().player1_name);
     $('#player2_name').html(snapshot.val().player2_name);
     $('#player1_score').html(snapshot.val().player1_score);
     $('#player2_score').html(snapshot.val().player2_score);
+    $('#chatWindow').append(snapshot.val().player1_chat);
+    $('#chatWindow').append(snapshot.val().player2_chat);
 
     // error handling
-  }), function (errorObject) {
-    console.log("The read Failed: " + errorObject.code);
+    }), function (errorObject) {
+      console.log("The read Failed: " + errorObject.code);
   };
 
   // enter player name function
@@ -176,13 +180,13 @@ $(document).ready(function() {
     // prevent reload of page on enter key
     event.preventDefault(); 
 
-    name = $('#nameInput').val().trim();
+    playerName = $('#nameInput').val().trim();
     // logic for which player you are
-    if (players == 0) {
+    if (players === 0) {
       // update players variables locally and on fb
       database.ref().update({
         'players': 1,
-        'player1_name': name,
+        'player1_name': playerName,
       });
       playerNumber = 1;
 
@@ -196,13 +200,13 @@ $(document).ready(function() {
       // sets players =2 in fb, which then updates local variable to 2
       database.ref().update({
         'players': 2,
-        'player2_name': name,
+        'player2_name': playerName,
       });    
       playerNumber = 2;  
       renderButtons();
       $('#gameMessage').empty();
       $('#gameMessage').html('You can choose your move when ready');
-    };    
+    }    
 
     // clear playerName text box and replace with placeholder text. 
     // clear div
@@ -219,21 +223,25 @@ $(document).ready(function() {
   // on disconnect function in firebase
 
   // =========================================================
-  // chat window handler
-
-  // write messages to chat window
-
+ 
   // chat message on-click
-  function sendButton () {
+  function sendButton (event) {
+    event.preventDefault();
     // target #chatInputText and append to playerName
-    var chatMsg = playerName + $('#chatInputText').val();
+    var chatMsg = playerName + ': ' + $('#chatInputText').val() + '<br>';
 
-    // append chat text to chat window
-    $('#chatWindow').append(chatMsg);
+    // append chat text to firebase
+    if (playerNumber == 1) {
+      database.ref().update({'player1_chat': chatMsg});
+    } else {
+      database.ref().update({'player1_chat': chatMsg});
+    }
 
     // clear #chatInputText
-    $('#chatInputText').empty();
-  };
+    $('#chatInputText').val('');
+  }
+
+
   // chat send button event listener
   $('#chatButton').click(sendButton);
   
