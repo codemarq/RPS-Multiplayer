@@ -25,69 +25,62 @@
 
 	<!-- firebase -->
 	<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
-
-	<!-- javascript app rps_app.js -->
-	<script type="text/javascript" src="assets/javascript/rps_app.js"></script>
 </head>
 <body>
 <div class="page-wrap container">
 	<header>
 		<h1>Rock, Paper, Scissors, Lizard, Spock!</h1>
-	</header>
-	<section class="col-lg-10 col-lg-offset-1">
 		<!-- div player name input form -->
 		<form class="form-horizontal">
-			<input type="text" id="nameInput" placeholder="Name">
+			<input type="text" id="nameInput" placeholder="Enter Name">
 
 			<button id="startButton" class="startButton button btn btn-default" type="submit" value="start">Start</button>
 		</form>
-
+	</header>
+	<section class="col-lg-4">
+		<br>
 		<!-- ================================= -->
+		<h3>Game Area</h3>
 		<!-- div main game arena -->
 		<div id="arena" class="row">
+			<!-- game messages -->
+			<div class="col-sm-12 well" id="gameMessages">
+				<h3 id="gameMessage">Enter name to start</h3>
+				<!-- <img src="assets/images/rpsls_wallpaper_by_pishnook-d33h9p5.jpg"> -->
+			</div>
+
 			<!-- player one -->
-			<div class="col-md-4 col-sm-12 col-lg-4 box" id="player1">
+			<div class="col-sm-12 well" id="player1">
 					<h3 id='player1_name'>Waiting for Player 1</h3>
 					<div id="player1_buttons"></div>
 					<div id="player1_score"><h2>Score: 0</h2></div>
 			</div>
 
-			<!-- game messages -->
-			<div class="col-md-4 col-sm-12 col-lg-4 box" id="gameMessages">
-				<h3 id="gameMessage">Enter name to start</h3>
-				<img src="assets/images/rpsls_wallpaper_by_pishnook-d33h9p5.jpg">
-			</div>
-
 			<!-- player two -->
-			<div class="col-md-4 col-sm-12 col-lg-4 box" id="player2">
+			<div class="col-sm-12 well" id="player2">
 				<h3 id="player2_name">Waiting for Player 2</h3>
 				<div id="player2_buttons"></div>
 				<div id="player2_score"><h2>Score: 0</h2></div>
 			</div>
 		</div>
+	</section>
 
+	<aside class="col-lg-offset-4 col-lg-4">
+		<br>
+		<h3>Chat</h3>
 		<!-- div chat room -->
 		<form id="chat">
-			<legend>Chat</legend>
-			<!-- main chatroom window, past messages -->
-			<form-group class="col-lg-12">
-			<div id="chatWindow" class="panel panel-body"></div>
-			</form-group>
-
-			<!-- text input and button -->
-			<form-group id="chatInput" class="col-lg-12">
-				<input type="text" id="chatInputText" class="col-lg-10">
-				<button id="chatButton" class="col-lg-2 button btn btn-default" type="submit" value="send">Send</button>
-			</form-group>
-			
+			<div id="chatWindow" class="well col-sm-12"></div>
+			<input type="text" id="chatInputText" class="col-sm-12 col-lg-10">
+			<button id="chatButton" class="col-sm-12 col-lg-2 button btn btn-default" type="submit" value="send">Send</button>
 		</form>
-	</section>
+	</aside>
 </div>
 
 <footer>
-	<div class="container">
     	<p class="text-muted">&copy; 2016 John-Mike Marquardt</p>
-    </div>
 </footer>
+<!-- javascript app rps_app.js -->
+<script type="text/javascript" src="assets/javascript/rps_app.js"></script>
 </body>
 </html>

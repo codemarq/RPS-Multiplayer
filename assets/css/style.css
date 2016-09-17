@@ -1,9 +1,19 @@
-body {
-	text-align: center;
-	background-image: url('../images/grunge_wall_@2X.png');
+html {
+    position: relative;
+    min-height: 100%;
 }
 
-.footer {
+body {
+	text-align: center;
+    background-image: url('../images/27221_original.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    margin-bottom: 60px;
+    color: #fff5ee;
+}
+
+footer {
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -15,30 +25,26 @@ body {
     margin: 20px 0;
 }
 
-section {
-	
-}
-
 #chatWindow {
     background-color: white;
     border: solid grey 1px;
+    text-align: left;
+    white-space: pre-line;
+    max-height: 150px;
+    overflow: auto;
 }
 
 .choice {
     margin: 5px;
 }
 
-.box {
-    min-height: 80px;
-    background-color: white;
-    border: solid grey 1px;
+.well {
+    color: #396a93;
+    min-height: 94px;
 }
 
- img {
-    max-width: 250px;
-    max-height: 250px:;
-}
-
-#player2, #player1 {
-    min-height: 180px;
+#chatInputText, input {
+    min-height: 32px;
+    padding-left: 5px;
+    color: #396a93;
 }
