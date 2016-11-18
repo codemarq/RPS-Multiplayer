@@ -1,4 +1,4 @@
-# RPS-Multiplayer
+# Rock, Paper, Scissors, Lizard, Spock-Multiplayer
 Rock, Paper, Scissors, Lizard, Spock-A multiplayer online game written in Javascript utilizing Firebase for player interaction and chat.
 
 ## Screenshots
