@@ -35,6 +35,4 @@ I created this project for class in order to learn Firebase.  My main focus at t
 * Game selector-(Rock, Paper, Scissors), (Rock, Paper, Scissors, Lizard, Spock) and other variations
 
 ## Author
-John-Mike Marquardt @codemarq 
-
-### Acknowledgements
+&copy; 2016 John-Mike Marquardt [Github](https://github.com/codemarq) | [jmmarquardt.com](https://jmmarquardt.com)
