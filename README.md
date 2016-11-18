@@ -1,6 +1,9 @@
 # Rock, Paper, Scissors, Lizard, Spock-Multiplayer
 Rock, Paper, Scissors, Lizard, Spock-A multiplayer online game written in Javascript utilizing Firebase for player interaction and chat.
 
+## View on Heroku
+[Rock, Paper, Scissors](https://jmmarquardt-rpsls.herokuapp.com/)
+
 ## Screenshots
 ### Desktop
 ![ScreenShot](assets/images/screenshot_1.png)
